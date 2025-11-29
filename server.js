@@ -39,6 +39,7 @@ app.post('/api/create-user', async (req, res) => {
 
     res.json({
       message: 'User created successfully',
+      id: user.id,
       username: user.username,
       expiresAt: user.expiry_date,
     });
@@ -68,13 +69,49 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '1d' }
     );
 
-    res.json({ message: 'Login successful', token, expiresAt: user.expiry_date });
+    res.json({
+      message: 'Login successful',
+      token,
+      id: user.id,
+      expiresAt: user.expiry_date
+    });
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Login failed' });
   }
 });
+
+// RENEW EXPIRY DATE (PUT) USING ID
+app.put('/api/renew-expiry/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10); // ensure ID is a number
+    if (isNaN(id)) return res.status(400).json({ message: 'Invalid user ID' });
+
+    // Use findOne instead of findByPk
+    const user = await User.findOne({ where: { id } });
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Add 3 days from current expiry date if exists, otherwise from today
+    const currentExpiry = user.expiry_date ? new Date(user.expiry_date) : new Date();
+    const newExpiryDate = new Date(currentExpiry.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+    user.expiry_date = newExpiryDate;
+    await user.save();
+
+    res.json({
+      message: 'Expiry date renewed for 3 more days',
+      id: user.id,
+      newExpiryDate: newExpiryDate.toISOString()
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to renew expiry date' });
+  }
+});
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
