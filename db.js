@@ -1,5 +1,4 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config();
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -12,18 +11,14 @@ const sequelize = new Sequelize(
     logging: false,
 
     pool: {
-      max: 5,
+      max: 1,
       min: 0,
-      acquire: 60000,
-      idle: 10000
+      idle: 0,
+      acquire: 30000
     },
 
     dialectOptions: {
-      connectTimeout: 60000
-    },
-
-    retry: {
-      max: 3
+      connectTimeout: 100000
     }
   }
 );

@@ -27,7 +27,7 @@ const authenticateToken = (req, res, next) => {
 // DATABASE CONNECT
 (async () => {
   try {
-    await sequelize.authenticate();
+    // await sequelize.authenticate();
     await sequelize.sync(); 
     console.log('Database connected & synced');
   } catch (err) {
@@ -35,9 +35,11 @@ const authenticateToken = (req, res, next) => {
   }
 })();
 
-// CREATE USER
 app.post('/api/create-user', async (req, res) => {
   try {
+    // Force reconnect every request
+    await sequelize.authenticate();
+
     const { username, password } = req.body;
     if (!username || !password)
       return res.status(400).json({ message: 'Missing username or password' });
@@ -58,10 +60,11 @@ app.post('/api/create-user', async (req, res) => {
       expiresAt: user.expiry_date,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to create user' });
+    console.error('DB / API error:', err);
+    res.status(500).json({ message: 'Failed to create user (temporary fix)' });
   }
 });
+
 
 // LOGIN
 app.post('/api/login', async (req, res) => {
