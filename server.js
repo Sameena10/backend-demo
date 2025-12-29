@@ -45,7 +45,7 @@ app.post('/api/create-user', async (req, res) => {
       return res.status(400).json({ message: 'Missing username or password' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const expiryDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+    const expiryDate = new Date(Date.now() + 6 * 24 * 60 * 60 * 1000);
 
     const user = await User.create({
       username,

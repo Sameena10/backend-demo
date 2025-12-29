@@ -7,19 +7,8 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: 'mysql',
+    dialect: process.env.DB_DIALECT, // 'postgres'
     logging: false,
-
-    pool: {
-      max: 1,
-      min: 0,
-      idle: 0,
-      acquire: 30000
-    },
-
-    dialectOptions: {
-      connectTimeout: 100000
-    }
   }
 );
 
