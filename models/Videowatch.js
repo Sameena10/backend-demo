@@ -9,16 +9,15 @@ const VideoWatchLog = sequelize.define('VideoWatchLog', {
     autoIncrement: true
   },
 
-  // FIXED: use DataTypes, add missing comma
   user_id: {
-    type: DataTypes.INTEGER,       // SIGNED to match Users.id
+    type: DataTypes.INTEGER,      
     allowNull: false,
     references: {
       model: 'Users',
       key: 'id'
     },
     onDelete: 'CASCADE'
-  },  // ← YOU MISSED THIS COMMA earlier!!
+  },  
 
   video_title: {
     type: DataTypes.STRING(255),
